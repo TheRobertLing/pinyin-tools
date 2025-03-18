@@ -1,0 +1,33 @@
+{
+  "name": "pinyin-convert-tone",
+  "version": "1.0.0",
+  "description": "Utility to convert between pinyin tone marks and tone numbers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheRobertLing/pinyin-convert-tone.git"
+  },
+  "keywords": [
+    "pinyin",
+    "convert",
+    "chinese",
+    "tone",
+    "diacritic",
+    "conversion"
+  ],
+  "author": "Robert Ling",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TheRobertLing/pinyin-convert-tone/issues"
+  },
+  "homepage": "https://github.com/TheRobertLing/pinyin-convert-tone#readme",
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "jest": "^29.7.0",
+    "typescript": "^5.8.2"
+  },
+  "type": "module"
+}
