@@ -1,5 +1,4 @@
 const toneMap: Record<string, string> = {
-  // Lowercase letters
   ā: "a",
   á: "a",
   ǎ: "a",
@@ -24,57 +23,32 @@ const toneMap: Record<string, string> = {
   ú: "u",
   ǔ: "u",
   ù: "u",
+  ü: "v",
   ǖ: "v",
   ǘ: "v",
   ǚ: "v",
   ǜ: "v",
-
-  // Uppercase letters
-  Ā: "A",
-  Á: "A",
-  Ǎ: "A",
-  À: "A",
-  Ē: "E",
-  É: "E",
-  Ě: "E",
-  È: "E",
-  Ê̄: "E",
-  Ế: "E",
-  Ê̌: "E",
-  Ề: "E",
-  Ī: "I",
-  Í: "I",
-  Ǐ: "I",
-  Ì: "I",
-  Ō: "O",
-  Ó: "O",
-  Ǒ: "O",
-  Ò: "O",
-  Ū: "U",
-  Ú: "U",
-  Ǔ: "U",
-  Ù: "U",
-  Ǖ: "V",
-  Ǘ: "V",
-  Ǚ: "V",
-  Ǜ: "V",
 };
 
 const regexPattern: RegExp = new RegExp(Object.keys(toneMap).join("|"), "g");
 
 /**
- * Removes diacritic tone marks from Pinyin syllables.
+ * Removes diacritic tone marks from pinyin syllables.
  *
- * This function takes a Pinyin string (or an array of Pinyin strings) with diacritic tone marks
- * and returns the same Pinyin syllables without the tone marks.
+ * Notes:
+ * - For the sake of consistency, all input is normalized to lower case.
+ * - Invalid pinyin syllables may yield unpredictable results
+ * - Does not remove any tone numbers, and is only used for specifically
+ * pinyin in diacritic notation
+ * - To align with common pinyin typing practises, the following pinyin
+ * syllables containing ü will be converted into v:
+ * nü, lü, nüe, lüe -> nv, lv, nve, lve
  *
- * Note: The function assumes the input is a **valid Pinyin syllable** that contains a diacritic tone mark
- * in the correct place. If the input is NOT valid, the behaviour of this function cannot be guaranteed. In the
- * case that a pinyin syllable provided has a neutral tone or no diacritic mark, no changes are made.
  *
- *
- * @param input - A valid Pinyin string or an array of valid Pinyin strings with diacritic tone marks.
- * @returns The input Pinyin with tone marks removed, preserving the original structure.
+ * @param input A pinyin string or an array of pinyin strings with tone numbers. Each
+ * string is treated entirely as a pinyin (i.e no pinyin separated by whitespaces in a single string).
+ * The pinyin syllable is assumed to be valid.
+ * @returns A single pinyin syllable or list of pinyin syllables with tones removed.
  *
  * @example
  * removeTone("mǎ"); // Returns "ma"
@@ -86,14 +60,15 @@ const regexPattern: RegExp = new RegExp(Object.keys(toneMap).join("|"), "g");
 function removeTone(input: string): string;
 function removeTone(input: string[]): string[];
 function removeTone(input: string | string[]): string | string[] {
-  const convert = (str: string) =>
-    str.replace(regexPattern, (match) => toneMap[match]);
+  const convert = (str: string) => {
+    str = str.toLowerCase();
+    return str.replace(regexPattern, (match) => toneMap[match]);
+  };
 
-  if (Array.isArray(input)) {
-    return input.map(convert);
-  }
+  const inputArray: string[] = Array.isArray(input) ? input : [input];
+  const results = inputArray.map(convert);
 
-  return convert(input);
+  return Array.isArray(input) ? results : results[0];
 }
 
 export { removeTone };
