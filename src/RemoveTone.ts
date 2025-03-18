@@ -60,8 +60,7 @@ const toneMap: Record<string, string> = {
   Ǜ: "V",
 };
 
-const tonesChars: string = Object.keys(toneMap).join("|");
-const regexPattern: RegExp = new RegExp(tonesChars, "g");
+const regexPattern: RegExp = new RegExp(Object.keys(toneMap).join("|"), "g");
 
 /**
  * Removes diacritic tone marks from Pinyin syllables.
@@ -84,17 +83,17 @@ const regexPattern: RegExp = new RegExp(tonesChars, "g");
  * removeTone("huai"); // Returns "huai", syllable unchanged
  * removeTone("hữai"); // Invalid diacritic mark
  */
-const removeTone = (input: string | string[]): string | string[] => {
+function removeTone(input: string): string;
+function removeTone(input: string[]): string[];
+function removeTone(input: string | string[]): string | string[] {
   const convert = (str: string) =>
     str.replace(regexPattern, (match) => toneMap[match]);
 
-  if (typeof input === "string") {
-    return convert(input);
-  } else if (Array.isArray(input)) {
+  if (Array.isArray(input)) {
     return input.map(convert);
   }
 
-  throw new Error("Invalid input: Expected a string or an array of strings.");
-};
+  return convert(input);
+}
 
-export { removeTone }
+export { removeTone };

@@ -134,12 +134,22 @@ const unusedPinyin: Set<string> = new Set(
  * isValidPinyin(["hello", "world", "pin", "yin", "han4", "zi4"], {include: ["hello", "world", "han4", "zi4"], exclude: ["pin", "yin"]}); // Returns [true, true, false, false, true, true] ("pin", "yin" now manually excluded)
  * isValidPinyin("pin", {exclude:["pin"]}) // Returns false (user specified blacklist takes priority)
  */
-const isValidPinyin = (
+function isValidPinyin(
+  input: string,
+  allowUnused?: boolean,
+  options?: Options
+): boolean;
+function isValidPinyin(
+  input: string[],
+  allowUnused?: boolean,
+  options?: Options
+): boolean[];
+function isValidPinyin(
   input: string | string[],
   allowUnused: boolean = false,
   { include = [], exclude = [] }: Options = {}
-): boolean | boolean[] => {
-  const inputArray: string[] = typeof input === "string" ? [input] : input;
+): boolean | boolean[] {
+  const inputArray: string[] = Array.isArray(input) ? input : [input];
   const included: Set<string> = new Set(include);
   const excluded: Set<string> = new Set(exclude);
 
@@ -159,7 +169,7 @@ const isValidPinyin = (
     }
   });
 
-  return inputArray.length === 1 ? results[0] : results;
-};
+  return Array.isArray(input) ? results : results[0];
+}
 
 export { isValidPinyin }
