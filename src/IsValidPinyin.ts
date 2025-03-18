@@ -1,4 +1,5 @@
 type Options = {
+  allowUnused?: boolean;
   include?: string[];
   exclude?: string[];
 };
@@ -104,26 +105,27 @@ const unusedPinyin: Set<string> = new Set(
 );
 
 /**
- * Determines whether a string or each string in an array is a valid Pinyin syllable.
+ * Determines if pinyin syllables in diacritic mark notation is valid
  *
  * Notes:
- * 1. Each input string must be a single Pinyin syllable.
- *    - Multi-syllabic words (e.g., `"nihao"`) are not considered valid.
- * 2. Only standard Pinyin syllables are validated.
- *    - Supports both pinyin with diacritics (e.g., `"nǐ"`, `"hǎo"`) and pinyin without tones (e.g., `"ni"`, `"hao"`).
- *    - Does NOT support tone numbers (e.g., `"ni3"`, `"hao4"` will be considered invalid).
- *    - To add support for tone numbers, you may specify your own custom list via the include option
+ * - For the sake of consistency, all input is normalized to lower case.
+ * - Invalid pinyin syllables may yield unpredictable results
+ * - Only "standard" Pinyin syllables are validated.
+ * - Does not support tone numbers (e.g., `"ni3"`, `"hao4"` will be considered invalid unless manually included)
  *
- * @param {string | string[]} input - A pinyin syllable or an array of pinyin syllables.
- * @param {boolean} [allowUnused] - Whether to check against a set of valid pinyin syllables with tone marks that do not 
- * correspond to any Chinese characters. (e.g. "tē", "té", "tě"). Does not include entirely non-existent or malformed 
- * pinyin syllables (e.g., "giao", "qa", "qo"), even if their initials and finals are individually valid in other 
+ *
+ * @param input A pinyin string or an array of pinyin strings with diacritic tone marks. Each
+ * string is treated entirely as a pinyin (i.e no pinyin separated by whitespaces in a single string).
+ * The pinyin syllable is assumed to be valid.
+ * @param options Options for inclusion/exclusion lists.
+ * @param options.allowUnused Whether to check against a set of valid pinyin syllables with tone marks that do not
+ * correspond to any Chinese characters. (e.g. "tē", "té", "tě"). Does not include entirely non-existent or malformed
+ * pinyin syllables (e.g., "giao", "qa", "qo"), even if their initials and finals are individually valid in other
  * combinations. Set to false by default.
- * @param {Object} options - Options for inclusion/exclusion lists.
- * @param {string[]} [options.include] - User defined syllables to explicitly include.
- * @param {string[]} [options.exclude] - User defined syllables syllables to explicitly exclude.
- * @returns {boolean | boolean[]} - Returns `true` if the input is valid; if an array is provided, returns an array of booleans.
- * 
+ * @param options.include User defined syllables to explicitly include.
+ * @param options.exclude User defined syllables syllables to explicitly exclude.
+ * @returns A single boolean or list of booleans describing if the provided pinyin syllable/s are valid.
+ *
  * @example
  * isValidPinyin("líng"); // Returns true
  * isValidPinyin(["xiāng", "líng"]); // Returns [true, true]
@@ -132,28 +134,21 @@ const unusedPinyin: Set<string> = new Set(
  * isValidPinyin(["hello", "world", "pin", "yin", "han4", "zi4"]); // Returns [false, false, true, true, false, false] ("hello", "world" are not valid pinyin, "han4", "zi4" have numbers appended)
  * isValidPinyin(["hello", "world", "pin", "yin", "han4", "zi4"], {include: ["hello", "world", "han4", "zi4"]}); // Returns [true, true, true, true, true, true] ("hello", "world", "han4", "zi4" now manually included)
  * isValidPinyin(["hello", "world", "pin", "yin", "han4", "zi4"], {include: ["hello", "world", "han4", "zi4"], exclude: ["pin", "yin"]}); // Returns [true, true, false, false, true, true] ("pin", "yin" now manually excluded)
- * isValidPinyin("pin", {exclude:["pin"]}) // Returns false (user specified blacklist takes priority)
+ * isValidPinyin("pin", { exclude:["pin"] }) // Returns false (user specified blacklist takes priority)
  */
-function isValidPinyin(
-  input: string,
-  allowUnused?: boolean,
-  options?: Options
-): boolean;
-function isValidPinyin(
-  input: string[],
-  allowUnused?: boolean,
-  options?: Options
-): boolean[];
+function isValidPinyin(input: string, options?: Options): boolean;
+function isValidPinyin(input: string[], options?: Options): boolean[];
 function isValidPinyin(
   input: string | string[],
-  allowUnused: boolean = false,
-  { include = [], exclude = [] }: Options = {}
+  { allowUnused = false, include = [], exclude = [] }: Options = {}
 ): boolean | boolean[] {
   const inputArray: string[] = Array.isArray(input) ? input : [input];
   const included: Set<string> = new Set(include);
   const excluded: Set<string> = new Set(exclude);
 
   const results: boolean[] = inputArray.map((pinyin) => {
+    pinyin = pinyin.toLowerCase();
+
     if (allowUnused) {
       return (
         (validPinyin.has(pinyin) ||
@@ -172,4 +167,4 @@ function isValidPinyin(
   return Array.isArray(input) ? results : results[0];
 }
 
-export { isValidPinyin }
+export { isValidPinyin };
