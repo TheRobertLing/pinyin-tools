@@ -1,15 +1,22 @@
 {
-  "name": "pinyin-convert-tone",
+  "name": "pinyin-tools",
   "version": "1.0.0",
-  "description": "Utility to convert between pinyin tone marks and tone numbers",
-  "main": "index.js",
+  "description": "Utility functions for working with pinyin",
+  "main": "./dist/PinyinTools.js",
+  "module": "./dist/PinyinTools.js",
+  "exports": {
+    "import": "./dist/PinyinTools.js"
+  },
+  "types": "./dist/PinyinTools.d.ts",
   "scripts": {
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TheRobertLing/pinyin-convert-tone.git"
+    "url": "git+https://github.com/TheRobertLing/pinyin-tools.git"
   },
   "keywords": [
     "pinyin",
@@ -17,18 +24,22 @@
     "chinese",
     "tone",
     "diacritic",
-    "conversion"
+    "conversion",
+    "validation"
   ],
   "author": "Robert Ling",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TheRobertLing/pinyin-convert-tone/issues"
+    "url": "https://github.com/TheRobertLing/pinyin-tools/issues"
   },
-  "homepage": "https://github.com/TheRobertLing/pinyin-convert-tone#readme",
+  "homepage": "https://github.com/TheRobertLing/pinyin-tools#readme",
   "devDependencies": {
     "@vitest/coverage-istanbul": "^3.0.9",
     "typescript": "^5.8.2",
     "vitest": "^3.0.9"
   },
-  "type": "module"
+  "type": "module",
+  "files": [
+    "dist/"
+  ]
 }
