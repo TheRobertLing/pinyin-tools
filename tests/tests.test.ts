@@ -112,6 +112,7 @@ describe("numberToDiacritic tests", () => {
     ["nü", "nü"],
     ["nü", "nü"],
     ["sou1", "sōu"],
+    ["MING2", "míng"],
   ])("basic tests", (input, expected) => {
     expect(numberToDiacritic(input)).toBe(expected);
   });
@@ -170,6 +171,10 @@ describe("removeTone tests", () => {
     ["nǚ", "nv"],
     ["lǘ", "lv"],
     ["tīng", "ting"],
+    ["yuan2", "yuan"],
+    ["shen2", "shen"],
+    ["qi3", "qi"],
+    ["dong4", "dong"],
   ])("single pinyin input", (input, expected) => {
     expect(removeTone(input)).toBe(expected);
   });
