@@ -292,7 +292,7 @@ describe("isValidPinyin tests", () => {
     ["hello world", true],
     ["biang", true],
     ["RASASNDAOSDAOSIDJAOJSDIOASD", true],
-    ["", false],
+    ["", true],
   ])("allow custom characters", (input, expected) => {
     expect(
       isValidPinyin(input, {
