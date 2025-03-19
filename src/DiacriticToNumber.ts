@@ -1,4 +1,4 @@
-import { removeTone } from "./RemoveTone";
+import { removeTone } from "./RemoveTone.js";
 
 const toneMap: Record<string, string> = {
   ā: "1",

@@ -42,7 +42,7 @@ function numberToDiacritic(input: string | string[]): string | string[] {
 
     const tone: string = extractNumber(pinyin);
     if (!tone) {
-      return pinyin; // No tone number
+      return pinyin.replace("v", "ü"); // No tone number
     }
 
     const toneNum: number = Number(tone) % 5;
