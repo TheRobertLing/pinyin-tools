@@ -1,10 +1,10 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test } from "vitest";
 import {
   diacriticToNumber,
   numberToDiacritic,
   removeTone,
   isValidPinyin,
-} from "../src/PinyinTools";
+} from "../src/PinyinTools.js";
 
 describe("diacriticToNumber", () => {
   test.each([
@@ -107,6 +107,11 @@ describe("numberToDiacritic tests", () => {
     ["tian1", "tiān"],
     ["guo4", "guò"],
     ["fei1", "fēi"],
+    ["qian", "qian"],
+    ["nv", "nü"],
+    ["nü", "nü"],
+    ["nü", "nü"],
+    ["sou1", "sōu"],
   ])("basic tests", (input, expected) => {
     expect(numberToDiacritic(input)).toBe(expected);
   });
