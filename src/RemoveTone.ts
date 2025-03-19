@@ -62,7 +62,8 @@ function removeTone(input: string[]): string[];
 function removeTone(input: string | string[]): string | string[] {
   const convert = (str: string) => {
     str = str.toLowerCase();
-    return str.replace(regexPattern, (match) => toneMap[match]);
+    str = str.replace(regexPattern, (match) => toneMap[match]);
+    return str.replace(/\d+/g, "");
   };
 
   const inputArray: string[] = Array.isArray(input) ? input : [input];
