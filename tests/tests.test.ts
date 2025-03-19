@@ -291,10 +291,20 @@ describe("isValidPinyin tests", () => {
     ["ka3", true],
     ["hello world", true],
     ["biang", true],
+    ["RASASNDAOSDAOSIDJAOJSDIOASD", true],
+    ["", false],
   ])("allow custom characters", (input, expected) => {
     expect(
       isValidPinyin(input, {
-        include: ["ben1", "chi2", "ka3", "hello world", "biang"],
+        include: [
+          "ben1",
+          "chi2",
+          "ka3",
+          "hello world",
+          "biang",
+          "RASASNDAOSDAOSIDJAOJSDIOASD",
+          "",
+        ],
       })
     ).toBe(expected);
   });
