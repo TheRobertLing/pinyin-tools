@@ -143,8 +143,8 @@ function isValidPinyin(
   { allowUnused = false, include = [], exclude = [] }: Options = {}
 ): boolean | boolean[] {
   const inputArray: string[] = Array.isArray(input) ? input : [input];
-  const included: Set<string> = new Set(include);
-  const excluded: Set<string> = new Set(exclude);
+  const included: Set<string> = new Set(include.map((item) => item.toLowerCase()));
+  const excluded: Set<string> = new Set(exclude.map((item) => item.toLowerCase()));
 
   const results: boolean[] = inputArray.map((pinyin) => {
     pinyin = pinyin.toLowerCase();
