@@ -17,7 +17,7 @@ type Options = {
  * - Examples of excluded non-standard pinyin: "biang" (https://en.wiktionary.org/wiki/%F0%B0%BB%9D)
  */
 const validPinyin: Set<string> = new Set(
-`ba      bo      bai     bei     bao     ban     ben     bang    beng    bi      bie     biao    bian    bin     bing    bu      pa      po      pai     pei     pao     pou     pan     pen     pang    peng    pi      pie     piao    pian
+  `ba      bo      bai     bei     bao     ban     ben     bang    beng    bi      bie     biao    bian    bin     bing    bu      pa      po      pai     pei     pao     pou     pan     pen     pang    peng    pi      pie     piao    pian
  pin     ping    pu      ma      mo      mai     mei     mao     mou     man     men     mang    meng    mi      mie     miao    miu     mian    min     ming    mu      fa      fo      me      fei     fou     fan     fen     fang    feng    
  fu      da      de      dai     dei     dao     dou     dan     den     dang    deng    dong    di      dia     die     diao    diu     dian    ding    du      duo     dui     duan    dun     ta      te      tai     tei     tao     tou     
  tan     tang    teng    tong    ti      tie     tiao    tian    ting    tu      tuo     tui     tuan    tun     na      ne      nai     nei     nao     nou     nan     nen     nang    neng    nong    ni      nie     niao    niu     nian    
@@ -91,7 +91,7 @@ const validPinyin: Set<string> = new Set(
  * - Examples: "tē", "té", "tě" (valid syllable "te" with tones that do not correspond to characters).
  */
 const unusedPinyin: Set<string> = new Set(
-`bén     bán     báng    bián    bín     bíng    biáo    béi     pǎ      bǐn     pòu     pié     piè     pìng    mēi     màng    miě     mié     miú     māi     miān    mīn     mìn     mīng    māng    mū      fō      fǒ      mē      fò
+  `bén     bán     báng    bián    bín     bíng    biáo    béi     pǎ      bǐn     pòu     pié     piè     pìng    mēi     màng    miě     mié     miú     māi     miān    mīn     mìn     mīng    māng    mū      fō      fǒ      mē      fò
  mě      mè      fōu     fòu     dě      mé      dè      dèi     miǔ     dóu     dán     dēn     dén     děn     dèn     dáng    déi     déng    dóng    diā     diá     dià     diè     diáo    diú     diǔ     diù     dián    díng    diě     
  duí     duǐ     duán    dún     tá      tē      té      tě      téi     těi     tèi     dái     těng    tié     nē      nāi     nēi     néi     nōu     nǒu     nén     něn     nēng    něng    nōng    nǒng    ně      niě     niāo    niáo    
  nīn     nìn     niāng   niǎng   nīng    nuān    nuán    nǖ      nǘ      nüē     nüé     nüě     lé      lāi     lě      lān     liā     liá     lià     lié     liān    liāng   līng    luān    nuō     lǖ      lüē     lüé     gái     gēi     
@@ -143,24 +143,24 @@ function isValidPinyin(
   { allowUnused = false, include = [], exclude = [] }: Options = {}
 ): boolean | boolean[] {
   const inputArray: string[] = Array.isArray(input) ? input : [input];
-  const included: Set<string> = new Set(include.map((item) => item.toLowerCase()));
-  const excluded: Set<string> = new Set(exclude.map((item) => item.toLowerCase()));
+  const included: Set<string> = new Set(include);
+  const excluded: Set<string> = new Set(exclude);
 
   const results: boolean[] = inputArray.map((pinyin) => {
+    if (excluded.has(pinyin)) {
+      return false;
+    }
+
+    if (included.has(pinyin)) {
+      return true;
+    }
+
     pinyin = pinyin.toLowerCase();
 
     if (allowUnused) {
-      return (
-        (validPinyin.has(pinyin) ||
-          unusedPinyin.has(pinyin) ||
-          included.has(pinyin)) &&
-        !excluded.has(pinyin)
-      );
+      return validPinyin.has(pinyin) || unusedPinyin.has(pinyin);
     } else {
-      return (
-        (validPinyin.has(pinyin) || included.has(pinyin)) &&
-        !excluded.has(pinyin)
-      );
+      return validPinyin.has(pinyin);
     }
   });
 
