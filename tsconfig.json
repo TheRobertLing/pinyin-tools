@@ -13,6 +13,6 @@
     "skipLibCheck": true,
     "declaration": true,
   },
-  "include": ["src"],
+  "include": ["src/PinyinTools.ts"],
   "exclude": ["node_modules", "dist"]
 }
