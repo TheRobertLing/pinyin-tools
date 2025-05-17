@@ -38,12 +38,13 @@ import {
 
 ## Function Usages
 
-The library provides 4 utilities:
+The library provides 5 utilities:
 
 1. `diacriticToNumber(input: string | string[]): string | string[]`
 2. `numberToDiacritic(input: string | string[]): string | string[]`
-3. `removeTone(input: string | string[]): string | string[]`
-4. `isValidPinyin(input: string | string[], options?: Options): boolean | boolean[]`
+3. `toCedictPinyin(input: string | string[]): string | string[]`
+4. `removeTone(input: string | string[]): string | string[]`
+5. `isValidPinyin(input: string | string[], options?: Options): boolean | boolean[]`
 
 ### diacriticToNumber
 
@@ -70,7 +71,16 @@ This function performs the reverse operation of `diacriticToNumber`, converting 
   - The input must include a valid tone number.
   - The number must correspond to a correct pinyin syllable. If these conditions are not met, the conversion may not work as expected.
 - Unlike `diacriticToNumber` both `v` and `ü` will be correctly recognized and converted. As an example, this means that `"lü2"` and `"lv2"` will both be transformed into `"lǘ"`.
+- The function is also compatible with CC-EDICT syntax meaning input such as `u:` will be correctly recognised and converted into `ü`.
 - All input is converted into lower case to ensure consistency.
+
+### toCedictPinyin
+
+This function converts "v" into "u:" to align with CC-EDICT syntax. You can pass either a single string or an array of strings.
+
+#### Notes:
+
+- This function expects the input to already be in numerical tone notation, and is recommended to be used AFTER calling `diacriticToNumber`.
 
 ### removeTone
 
@@ -100,11 +110,12 @@ The function also provides some customisation options.
 
 - The function currently does not support validation for pinyin with numerical tones. However, you may wish to define your own custom inclusion list.
 - A pinyin is considered to be "valid" if the syllable and tonal variation maps to a known Chinese character. You may wish to consult an online pinyin chart to determine which syllables are considered valid. What this means is that whilst the syllable `"te"` is valid, for example, `"tē", "té", "tě"` are NOT valid unless the `allowUnused` option is set to true, as they do not map to any Chinese characters (dialects are not accounted for and only official pronouciations are considered). Furthermore, syllables such as `"giao", "qa", "qo"` are also considered invalid even if their initials and finals are individually valid.
-- The `allowUnused` option permits tonal variations of a pinyin syllable only if they have valid character mappings, meaning not all tones for a given syllable will necessarily be allowed—only those with actual character representations. As an example, `"tē", "té", "tě"` are all considered valid with `allowUnused` set to `true`, but `"giao", "qa", "qo"` are still considered invalid as they were never valid syllables to begin with. 
+- The `allowUnused` option permits tonal variations of a pinyin syllable only if they have valid character mappings, meaning not all tones for a given syllable will necessarily be allowed—only those with actual character representations. As an example, `"tē", "té", "tě"` are all considered valid with `allowUnused` set to `true`, but `"giao", "qa", "qo"` are still considered invalid as they were never valid syllables to begin with.
 - Some lesser used pinyin such as `"biáng", "nià"` (see https://en.wikipedia.org/wiki/Biangbiang_noodles, https://www.sohu.com/a/668608723_121665426) are also considered invalid due to their absence from standard pinyin charts. If you wish to include such instances, you may use the `include` option to do so.
 - Input is first checked against a users custom inclusions and exclusions, before then being normalized to lower case and checked against a set of valid pinyin.
 
 ### Example Usage:
+
 ```js
 import {
   diacriticToNumber,
@@ -137,6 +148,11 @@ console.log(isValidPinyin("BǍI")); // Output: true
 console.log(isValidPinyin("pǔtōng")); // Output: false (each string treated as a single pinyin unit)
 console.log(isValidPinyin(["tē", "té", "tě", "tè"])); // Output: [false, false, false, true]
 console.log(isValidPinyin(["tē", "té", "tě", "tè"], { allowUnused: true })); // Output: [true, true, true, true]
-console.log(isValidPinyin(["tē", "té", "tě", "tè"], { allowUnused: true, exclude: ["tè"] })); // Output: [true, true, true, false] (exclusion list takes priority)
+console.log(
+  isValidPinyin(["tē", "té", "tě", "tè"], {
+    allowUnused: true,
+    exclude: ["tè"],
+  })
+); // Output: [true, true, true, false] (exclusion list takes priority)
 console.log(isValidPinyin("Hi person", { include: ["Hi person"] })); // Output: true
 ```
