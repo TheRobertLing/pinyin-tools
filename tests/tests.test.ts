@@ -4,6 +4,7 @@ import {
   numberToDiacritic,
   removeTone,
   isValidPinyin,
+  toCedictPinyin,
 } from "../src/PinyinTools.js";
 
 describe("diacriticToNumber", () => {
@@ -89,6 +90,63 @@ describe("diacriticToNumber", () => {
   });
 });
 
+describe("toCedictPinyin", () => {
+  test.each([
+    ["lve4", "lu:e4"],
+    ["nv3", "nu:3"],
+    ["nu:3", "nu:3"],
+    ["lu:4", "lu:4"],
+  ])("single pinyin input", (input, expected) => {
+    expect(toCedictPinyin(input)).toBe(expected);
+  });
+
+  test.each([
+    [
+      ["lve4", "nv3", "nu:3", "lu:4"],
+      ["lu:e4", "nu:3", "nu:3", "lu:4"],
+    ],
+  ])("array input for various ü/v/u: cases", (input, expected) => {
+    expect(toCedictPinyin(input)).toEqual(expected);
+  });
+});
+
+describe("integration with diacriticToNumber", () => {
+  test.each([
+    ["nǚ", "nu:3"],
+    ["lǜ", "lu:4"],
+    ["lüè", "lu:e4"],
+    ["nǜ", "nu:4"],
+    ["lǘ", "lu:2"],
+  ])("diacriticToNumber(%s) → toCedictPinyin → %s", (input, expected) => {
+    const numeric = diacriticToNumber(input);
+    const result = toCedictPinyin(numeric);
+    expect(result).toBe(expected);
+  });
+
+  test.each([
+    ["nǚ3", "nu:3"],
+    ["lǜ4", "lu:4"],
+    ["lüè4", "lu:e4"],
+    ["nǜ4", "nu:4"],
+    ["lǘ2", "lu:2"],
+  ])("erroneous numbers", (input, expected) => {
+    const numeric = diacriticToNumber(input);
+    const result = toCedictPinyin(numeric);
+    expect(result).toBe(expected);
+  });
+
+  test.each([
+    [
+      ["nǚ", "lǜ", "lüè"],
+      ["nu:3", "lu:4", "lu:e4"],
+    ],
+  ])("array pipeline", (input, expected) => {
+    const numeric = diacriticToNumber(input);
+    const result = toCedictPinyin(numeric);
+    expect(result).toEqual(expected);
+  });
+});
+
 describe("numberToDiacritic tests", () => {
   test.each([
     ["ni3", "nǐ"],
@@ -153,6 +211,16 @@ describe("numberToDiacritic tests", () => {
       ],
     ],
   ])("test nü, lü, nüe, lüe combinations ", (input, expected) => {
+    expect(numberToDiacritic(input)).toEqual(expected);
+  });
+
+  // New tests to check cc-edict compatability
+  test.each([
+    [
+      ["nu:3", "nu:4", "lu:2", "lu:3", "lu:4", "lu:e3", "lu:e4"],
+      ["nǚ", "nǜ", "lǘ", "lǚ", "lǜ", "lüě", "lüè"],
+    ],
+  ])("test cc-edict compatability ", (input, expected) => {
     expect(numberToDiacritic(input)).toEqual(expected);
   });
 });

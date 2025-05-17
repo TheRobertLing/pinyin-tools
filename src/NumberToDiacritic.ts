@@ -22,10 +22,11 @@ function extractNumber(str: string): string {
  * - For the sake of consistency, all input is normalized to lower case.
  * - The function makes use of the modulus operation (mod 5) so both 0 and 5 work to represent the neutral tone.
  * - Invalid pinyin syllables may yield unpredictable results
+ * - This function supports CC-EDICT syntax where 'u:' is used to represent the ü tone instead of 'v'
  *
  * @param input A pinyin string or an array of pinyin strings with tone numbers. Each
  * string is treated entirely as a pinyin (i.e no pinyin separated by whitespaces in a single string).
- * The pinyin syllable is assumed to be valid.
+ * The pinyin syllable is assumed to be valid
  * @returns A single pinyin syllable or list of pinyin syllables in diacritic notation.
  *
  * @example
@@ -42,11 +43,14 @@ function numberToDiacritic(input: string | string[]): string | string[] {
 
     const tone: string = extractNumber(pinyin);
     if (!tone) {
-      return pinyin.replace("v", "ü"); // No tone number
+      return pinyin.replace("v", "ü").replace("u:", "ü"); // No tone number
     }
 
     const toneNum: number = Number(tone) % 5;
-    let basePinyin = pinyin.replace(/\d+$/, "").replace("v", "ü");
+    let basePinyin = pinyin
+      .replace(/\d+$/, "")
+      .replace("v", "ü")
+      .replace("u:", "ü"); // To be CC-EDICT compatible
 
     // Algorithm: https://en.wikipedia.org/wiki/Pinyin
     let vowelToReplace: string | null = null;
